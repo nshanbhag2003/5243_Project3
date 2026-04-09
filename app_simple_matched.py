@@ -30,7 +30,7 @@ from core import (
     standardize_text_columns,
 )
 
-APP_VERSION = "simplified_v2"
+APP_VERSION = "dashboard_b_internal"
 BASE_DIR = Path(__file__).parent
 LOG_DIR = BASE_DIR / "logs"
 USAGE_LOG = LOG_DIR / "usage_log.csv"
@@ -63,15 +63,14 @@ app_ui = ui.page_navbar(
                 {"class": "hero-copy"},
                 ui.h1("DataCanvas Studio"),
                 ui.p(
-                    "A lighter version of the original dashboard: same overall look, fewer words, "
-                    "fewer controls, and a cleaner path from upload to analysis."
+                   "An interactive dashboard for data upload, cleaning, feature engineering, and exploratory analysis."
                 ),
                 ui.div(
                     {"class": "hero-badges"},
-                    ui.span("Same visual style"),
-                    ui.span("Reduced text"),
-                    ui.span("Faster workflow"),
-                    ui.span("Feedback logging"),
+                    ui.span("Interactive workflow"),
+                    ui.span("Data cleaning"),
+                    ui.span("Feature engineering"),
+                    ui.span("Exploratory analysis"),
                 ),
             ),
             ui.div(
@@ -83,7 +82,7 @@ app_ui = ui.page_navbar(
                     ui.tags.li("Inspect charts, download the result, and submit feedback."),
                 ),
                 ui.hr(),
-                ui.p({"class": "text-muted"}, "Use this version for the simpler-UI experiment."),
+                ui.p({"class": "text-muted"}, "Use this dashboard to prepare, explore, and export your data."),
             ),
         ),
     ),
@@ -286,17 +285,17 @@ app_ui = ui.page_navbar(
                 ui.download_button("download_processed", "Download processed CSV"),
             ),
             ui.card(
-                ui.card_header("Use in A/B test"),
+                ui.card_header("Usage notes"),
                 ui.tags.ul(
-                    ui.tags.li("Compare it against the original app."),
-                    ui.tags.li("Track time, download actions, and feedback ratings."),
-                    ui.tags.li("Use the logs folder for your later analysis."),
+                    ui.tags.li("Review the cleaned data before export."),
+                    ui.tags.li("Download the processed dataset for later analysis."),
+                    ui.tags.li("Use the feedback section to record your experience."),
                 ),
             ),
             col_widths=[6, 6],
         ),
     ),
-    title=ui.div({"class": "brand-lockup"}, ui.span("STAT 5243"), ui.strong("Simple UI Version")),
+    title=ui.div({"class": "brand-lockup"}, ui.span("STAT 5243"), ui.strong("DataCanvas Studio")),
     id="nav",
     fillable=True,
     bg="#14324a",
@@ -670,17 +669,28 @@ def server(input, output, session):
             return df
 
         if pd.api.types.is_numeric_dtype(df[col]):
-            selected = input.filter_range()
+            try:
+                selected = input.filter_range()
+            except Exception:
+                return df
             if selected is None:
                 return df
             low, high = selected
             return df[(df[col].isna()) | ((df[col] >= low) & (df[col] <= high))]
 
-        text_query = input.filter_text()
+        try:
+            text_query = input.filter_text()
+        except Exception:
+            text_query = None
+
         if text_query:
             return df[df[col].astype(str).str.contains(text_query, case=False, na=False)]
 
-        selected_values = input.filter_values()
+        try:
+            selected_values = input.filter_values()
+        except Exception:
+            selected_values = None
+
         if not selected_values:
             return df
         return df[df[col].astype(str).isin(selected_values)]
@@ -775,7 +785,6 @@ def server(input, output, session):
         elapsed_seconds = int((datetime.utcnow() - started_at).total_seconds())
         return (
             f"Session ID: {session_id}\n"
-            f"Version: {APP_VERSION}\n"
             f"Elapsed seconds: {elapsed_seconds}\n"
             f"Current features: {len(feature_specs())}"
         )
@@ -819,8 +828,6 @@ def server(input, output, session):
         profile = build_profile(df)
         lines = [f"{row.metric}: {row.value}" for row in profile.itertuples()]
         lines.append(f"Engineered features: {len(feature_specs())}")
-        lines.append("Dataset label: Simple UI Version")
-        lines.append(f"App version: {APP_VERSION}")
         return "\n".join(lines)
 
     @render.download(filename="processed_dataset.csv")
