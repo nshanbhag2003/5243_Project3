@@ -1,9 +1,0 @@
-shiny
-shinywidgets
-pandas
-numpy
-plotly
-pyreadr
-openpyxl
-xlrd
-scikit-learn
