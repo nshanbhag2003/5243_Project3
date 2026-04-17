@@ -73,13 +73,13 @@ pip install -r requirements.txt
 ### Run Control (Version A)
 
 ```bash
-python -m shiny run App_Versions/app_simple_matched.py
+python -m shiny run App_Versions/app_simple_ab.py
 ```
 
 ### Run Treatment (Version B)
 
 ```bash
-python -m shiny run App_Versions/core.py
+python -m shiny run App_Versions/app_original.py
 ```
 
 ### Run Analysis
