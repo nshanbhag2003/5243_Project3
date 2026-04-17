@@ -13,7 +13,7 @@ import plotly.express as px
 from shiny import App, reactive, render, req, ui
 from shinywidgets import output_widget, render_widget
 
-from core import (
+from App_Versions.core import (
     SAMPLE_DATASETS,
     FeatureSpec,
     apply_feature_engineering,
