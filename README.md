@@ -22,15 +22,15 @@ We compare:
 │   ├── project3_analysis.py
 │   └── (figures and results)
 ├── App_Versions/
-│   ├── app_simple_matched.py   # Control (A)
-│   └── core.py                 # Treatment (B)
+│   ├── app_simple_ab.py   # Control (A)
+│   └── app_original.py    # Treatment (B)
 ├── Data/
-│   ├── control.csv
-│   └── treatment.csv
+│   ├── App_Ver_A_Data_raw.csv # Control Dataset (A)
+│   └── App_Ver_B_Data_raw.csv # Treatment Dataset (B)
 ├── logs/
+├── Project 3.pdf
 ├── README.md
-├── requirements.txt
-└── Project 3.pdf
+└── requirements.txt
 ```
 
 * **Analysis/** → A/B test code and visual results
